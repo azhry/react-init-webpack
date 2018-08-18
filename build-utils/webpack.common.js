@@ -1,12 +1,15 @@
 const commonPaths = require('./common-paths');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-var LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
+const path = require('path');
+const fs  = require('fs');
+const lessToJs = require('less-vars-to-js');
+const themeVariables = lessToJs(fs.readFileSync(path.join(__dirname, '../src/theme/ant-theme-vars.less'), 'utf8'));
 
 const config = {
-	entry: {
-		vendor: ['semantic-ui-react']
-	},
 	output: {
 		path: commonPaths.outputPath,
 		publicPath: '/'
@@ -20,12 +23,29 @@ const config = {
 				    {
 				    	loader: 'babel-loader',
 				    	options: {
-					        plugins: ['lodash'],
+					        plugins: [
+					        	'lodash',
+					        	['import', { libraryName: "antd", style: true }]
+					        ],
 					        presets: [['env', { 'modules': false, 'targets': { 'node': 4 } }]]
 					    }
 				    }
 				]
-		  	}
+		  	},
+		  	{
+				test: /\.less$/,
+				use: [
+					{ loader: "style-loader" },
+					{ loader: "css-loader" },
+					{
+						loader: "less-loader",
+						options: {
+							javascriptEnabled: true,
+							modifyVars: themeVariables
+						}
+					}
+				]
+			}
 		]
 	},
 	optimization: {
@@ -38,7 +58,11 @@ const config = {
 					enforce: true
 			    }
 		  	}
-		}
+		},
+		minimize: true,
+		minimizer: [
+            new UglifyJsPlugin()
+        ]
 	},
 	plugins: [
 		new LodashModuleReplacementPlugin,

@@ -1,13 +1,12 @@
 import React from 'react';
-import { Rating } from 'semantic-ui-react';
-
+import { Button } from 'antd';
 import Layout from './Layout';
 
 const DynamicPage = () => {
 	return (
 		<Layout>
-			<Rating />
 			<p>This page was loaded asynchronously!!!</p>
+			<Button type="primary">Click here!</Button>
 		</Layout>
 	);
 };

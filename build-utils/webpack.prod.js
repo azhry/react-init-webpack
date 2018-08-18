@@ -42,6 +42,11 @@ const config = {
         ]
     },
     plugins: [
+        new webpack.DefinePlugin({ // <-- key to reducing React's size
+            'process.env': {
+                'NODE_ENV': JSON.stringify('production')
+            }
+        }),
         new ExtractTextPlugin({
             filename: 'styles/styles.[hash].css',
             allChunks: true

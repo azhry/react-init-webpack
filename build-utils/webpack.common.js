@@ -9,10 +9,12 @@ const fs  = require('fs');
 const lessToJs = require('less-vars-to-js');
 const themeVariables = lessToJs(fs.readFileSync(path.join(__dirname, '../src/theme/ant-theme-vars.less'), 'utf8'));
 
+const PUBLIC_PATH = '/';
+
 const config = {
 	output: {
 		path: commonPaths.outputPath,
-		publicPath: '/'
+		publicPath: PUBLIC_PATH
 	},
 	module: {
 		rules: [
@@ -47,22 +49,6 @@ const config = {
 				]
 			}
 		]
-	},
-	optimization: {
-		splitChunks: {
-		  	cacheGroups: {
-			    vendor: {
-					chunks: 'initial',
-					test: 'vendor',
-					name: 'vendor',
-					enforce: true
-			    }
-		  	}
-		},
-		minimize: true,
-		minimizer: [
-            new UglifyJsPlugin()
-        ]
 	},
 	plugins: [
 		new LodashModuleReplacementPlugin,

@@ -17,3 +17,11 @@ render(App);
 if (module.hot) module.hot.accept('./components/App', () => render(App));
 
 // https://medium.freecodecamp.org/learn-webpack-for-react-a36d4cac5060
+
+(function () {
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.register('./service-worker.js', {scope: '/'})
+			.then(() => console.log('Service Worker registered successfully.'))
+			.catch(error => console.log('Service Worker registration failed:', error));
+	}
+})();

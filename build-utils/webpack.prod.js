@@ -1,6 +1,10 @@
 const commonPaths = require('./common-paths');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
+
+const PUBLIC_PATH = '/';
 
 const config = {
     mode: 'production',
@@ -35,6 +39,22 @@ const config = {
             }
         ]
     },
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    chunks: 'initial',
+                    test: 'vendor',
+                    name: 'vendor',
+                    enforce: true
+                }
+            }
+        },
+        minimize: true,
+        minimizer: [
+            new UglifyJsPlugin()
+        ]
+    },
     plugins: [
         new webpack.DefinePlugin({ // <-- key to reducing React's size
             'process.env': {
@@ -44,6 +64,30 @@ const config = {
         new ExtractTextPlugin({
             filename: 'styles/styles.[hash].css',
             allChunks: true
+        }),
+        new SWPrecacheWebpackPlugin({
+            cacheId: 'my-domain-cache-id',
+            dontCacheBustUrlsMatching: /\.\w{8}\./,
+            filename: 'service-worker.js',
+            minify: true,
+            navigateFallback: PUBLIC_PATH + '/index.html',
+            staticFileGlobsIgnorePatterns: [/\.map$/, /manifest\.json$/]
+        }),
+        new WebpackPwaManifest({
+            name: 'Kasir',
+            short_name: 'Kasir',
+            description: 'Description!',
+            background_color: '#01579b',
+            theme_color: '#01579b',
+            'theme-color': '#01579b',
+            start_url: '/',
+            icons: [
+                {
+                    src: path.resolve('public/favicon.png'),
+                    sizes: [96, 128, 192, 256, 384, 512],
+                    destination: path.join('assets', 'icons')
+                }
+            ]
         })
     ]
 };
